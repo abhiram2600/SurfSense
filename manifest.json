@@ -1,0 +1,15 @@
+{
+  "manifest_version": 3,
+  "name": "test",
+  "version": "1.0",
+  "description": "yo",
+  "action": {
+    "default_popup": "index.html"
+  },
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "permissions": ["tabs", "idle", "scripting", "activeTab", "storage"],
+  "host_permissions": ["http://*/*", "https://*/*"]
+}
