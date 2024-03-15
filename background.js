@@ -8,8 +8,41 @@ const urlParser = (url) => {
   return domain;
 };
 let data = {};
-let currentWebsite = null;
+
 let startTime = null;
+const loadStatus = {
+  INITIAL: "initial",
+  LOADED: "loaded",
+  EMPTY: "empty",
+};
+let currentWebsite = {
+  id: null,
+  url: null,
+  status: loadStatus.EMPTY,
+};
+
+const setCurrentWebsite = ({
+  tabId = currentWebsite.id,
+  tabUrl,
+  tabStatus,
+}) => {
+  currentWebsite.id = tabId;
+  currentWebsite.url = tabUrl;
+  currentWebsite.status = tabStatus;
+};
+
+const startTimer = () => {
+  startTime = Date.now();
+};
+
+const stopTimer = (tb) => {
+  let endTime = Date.now();
+  let timeSpent = endTime - startTime;
+  console.log("time spent on ", currentWebsite.url, " is ", timeSpent);
+  //data[currentWebsite.url] = timeSpent;
+  // currentWebsite = tab;
+};
+
 const request = indexedDB.open("myDatabase", 1);
 request.onupgradeneeded = function (event) {
   const db = event.target.result;
@@ -22,22 +55,28 @@ request.onupgradeneeded = function (event) {
 request.onsuccess = function (event) {
   chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
     // NEW WEBSITE, UPDATE WEBSITE, RELOAD WEBSITE
-    // console.log("onUpdated", tab.id, tab.status, tab.url);
-    // if (
-    //   tab.id === a.id &&
-    //   tab.status === "complete" &&
-    //   tab.url !== "chrome://newtab/"
-    // ) {
-    //   console.time("time");
-    // }
     if (
       currentWebsite?.id &&
       tabId == currentWebsite.id &&
-      tab.status === "complete" &&
-      tab.url !== "chrome://newtab/"
+      tab.url &&
+      tab.status === "complete"
     ) {
-      currentWebsite.url = urlParser(tab.url);
-      startTime = Date.now();
+      // console.log();
+      // in case of new tab, setting a url
+      if (currentWebsite.status === loadStatus.INITIAL) {
+        setCurrentWebsite({ tabUrl: tab.url, tabStatus: loadStatus.LOADED });
+        startTimer();
+      } else if (
+        currentWebsite.status === loadStatus.LOADED &&
+        currentWebsite.url !== tab.url
+      ) {
+        stopTimer();
+        setCurrentWebsite({
+          tabUrl: tab.url,
+          tabStatus: loadStatus.LOADED,
+        });
+        startTimer();
+      }
       // console.log(data);
       //console.log("page has been updated with proper url ", currentWebsite.url);
     }
@@ -47,17 +86,32 @@ request.onsuccess = function (event) {
 
     /* For tab change */
     chrome.tabs.get(activeInfo.tabId, (tab) => {
-      if (!currentWebsite) {
-        currentWebsite = tab;
-      } else {
-        if (tab.id !== currentWebsite.id) {
-          let endTime = Date.now();
-          let timeSpent = endTime - startTime;
-          console.log("time spent on ", currentWebsite.url, " is ", timeSpent);
-          //data[currentWebsite.url] = timeSpent;
-          currentWebsite = tab;
-        }
+      if (tab.id !== currentWebsite.id) {
+        stopTimer();
       }
+      setCurrentWebsite({
+        tabId: tab.id,
+        tabUrl: tab.url ?? null,
+        tabStatus: loadStatus.INITIAL,
+      });
+      // for new tab
+      // if (currentWebsite.status === loadStatus.EMPTY) {
+      //   setCurrentWebsite({
+      //     tabId: tab.id,
+      //     tabUrl: tab.url ?? null,
+      //     tabStatus: loadStatus.INITIAL,
+      //   });
+      // } else {
+      //   // when tab changes to a different tab
+      //   if (tab.id !== currentWebsite.id) {
+      //     stopTimer();
+      //     setCurrentWebsite({
+      //       tabId: tab.id,
+      //       tabUrl: tab.url,
+      //       tabStatus: loadStatus.INITIAL,
+      //     });
+      //   }
+      // }
     });
   });
 
