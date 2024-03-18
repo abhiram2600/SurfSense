@@ -115,6 +115,7 @@ request.onsuccess = function (event) {
         tabUrl: tab.url ?? null,
         tabStatus: loadStatus.INITIAL,
       });
+      startTimer();
       // for new tab
       // if (currentWebsite.status === loadStatus.EMPTY) {
       //   setCurrentWebsite({
