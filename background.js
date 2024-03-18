@@ -35,9 +35,30 @@ const startTimer = () => {
   startTime = Date.now();
 };
 
+const saveDataToStore = (data) => {
+  chrome.storage.local.set({ siteInfo: data }, () => {
+    console.log("saved");
+  });
+};
+
+const retrieveData = () => {
+  chrome.storage.local.get("siteInfo", (result) => {
+    const data = result.siteInfo;
+    if (data) {
+      console.log("saved data is ", data);
+    }
+  });
+};
+
 const stopTimer = (tb) => {
   let endTime = Date.now();
   let timeSpent = endTime - startTime;
+  // uncomment for storage mechnism
+
+  // saveDataToStore({ url: currentWebsite.url, time: timeSpent });
+  // retrieveData();
+
+  // -------------------
   console.log("time spent on ", currentWebsite.url, " is ", timeSpent);
   //data[currentWebsite.url] = timeSpent;
   // currentWebsite = tab;
