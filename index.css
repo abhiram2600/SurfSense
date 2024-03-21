@@ -1,17 +1,17 @@
 #root-container {
-  justify-content: center;
-  align-items: center;
   width: max-content;
 }
 
 #title {
-  font-size: 25px;
+  font-size: 18px;
   text-align: center;
+  padding-top: 7px;
+  padding-bottom: 7px;
 }
 
-#separator {
-  height: 3px;
-  background-color: black;
-  width: 100%;
-  margin: 5px 1px;
+.separator {
+  margin: 0px 10px 0px 10px;
+  height: 2px;
+  background-color: rgb(218, 211, 211);
+  border-radius: 1px;
 }

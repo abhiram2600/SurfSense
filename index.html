@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>SurfSense</title>
     <link rel="stylesheet" href="index.css" />
   </head>
   <body>
@@ -11,30 +11,32 @@
       <!-- title section -->
 
       <div id="title-contianer">
-        <p id="title">Surfsense</p>
+        <p id="title"><b>Surfsense</b></p>
       </div>
-      <div id="separator"></div>
+      <div class="separator"></div>
 
       <!-- main section -->
 
       <div id="main-container">
         <p>Press button below to add the website to productive work</p>
         <p>this adds all subpages of this website as productive work</p>
-        <button type="button">Add Website</button>
+        <button type="button" id="addWebsiteButton">Add Website</button>
         <p>
           Press button below to add only the current website to productive work
         </p>
         <p>this adds only the current website</p>
-        <button type="button">Add current Webpage</button>
+        <button type="button" id="addCurrentWebpageButton">
+          Add current Webpage
+        </button>
 
         <p>Today's statistics</p>
         <p>productive</p>
-        <div></div>
         <p>others</p>
-        <div></div>
+        <p id="abc"></p>
 
-        <button type="button"><a href="edit.html">edit website list</a></button>
+        <a href="edit.html">edit website list</a>
       </div>
     </div>
+    <script src="index.js"></script>
   </body>
 </html>
