@@ -7,17 +7,12 @@
     <link rel="stylesheet" href="index.css" />
   </head>
   <body>
-    <input type="button" value="go back" onclick="history.back()" />
+    <button id="backButton">Back</button>
     <p>Unmark any website</p>
     <div id="website-list">
-      <ul>
-        <li>
-          <div>
-            <p>xyz</p>
-            <p>abc</p>
-          </div>
-        </li>
-      </ul>
+      <ul id="siteList"></ul>
     </div>
+    <button id="clearAllButton">Clear All</button>
+    <script src="edit.js"></script>
   </body>
 </html>

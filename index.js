@@ -1,10 +1,21 @@
+const uniqueId = () => {
+  const dateString = Date.now().toString(36).substring(2, 9);
+  const randomness = Math.random().toString(36).substring(2, 9);
+  return dateString + randomness;
+};
+
 const addToStorage = (site) => {
   chrome.storage.local.get(
     ("sitesData",
     (result) => {
       let sitesData = result.sitesData || [];
-      sitesData.push(site);
+      const existingSite = sitesData.find((item) => item.url === site);
+      if (existingSite) {
+        return;
+      }
+      const uuid = uniqueId();
 
+      sitesData.push({ id: uuid, url: site });
       chrome.storage.local.set({ sitesData }, () => {
         console.log("Added website");
       });
@@ -23,7 +34,7 @@ const addWebsite = async () => {
     const url = await getCurrentURL();
     const parsedUrl = new URL(url);
     const domain = parsedUrl.hostname;
-    //addToStorage(domain);
+    addToStorage(domain);
   } catch (error) {
     console.error("Error getting current URL", error);
   }
