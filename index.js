@@ -4,18 +4,30 @@ const uniqueId = () => {
   return dateString + randomness;
 };
 
-const addToStorage = (site) => {
+const addToStorage = (site, type) => {
   chrome.storage.local.get(
     ("sitesData",
     (result) => {
-      let sitesData = result.sitesData || [];
-      const existingSite = sitesData.find((item) => item.url === site);
-      if (existingSite) {
-        return;
-      }
-      const uuid = uniqueId();
+      let sitesData = result.sitesData || { domain: [], webPage: [] };
+      if (type === "domain") {
+        const existingSite = sitesData.domain.find((item) => item.url === site);
+        if (existingSite) {
+          return;
+        }
+        sitesData.domain.push({ id: uuid, url: site });
 
-      sitesData.push({ id: uuid, url: site });
+        const uuid = uniqueId();
+      } else {
+        const existingSite = sitesData.webPage.domain.find(
+          (item) => item.url === site
+        );
+        if (existingSite) {
+          return;
+        }
+        const uuid = uniqueId();
+
+        sitesData.webPage.push({ id: uuid, url: site });
+      }
       chrome.storage.local.set({ sitesData }, () => {
         console.log("Added website");
       });
@@ -34,7 +46,7 @@ const addWebsite = async () => {
     const url = await getCurrentURL();
     const parsedUrl = new URL(url);
     const domain = parsedUrl.hostname;
-    addToStorage(domain);
+    addToStorage(domain, "domain");
   } catch (error) {
     console.error("Error getting current URL", error);
   }
@@ -42,8 +54,8 @@ const addWebsite = async () => {
 
 const addCurrentWebpage = async () => {
   try {
-    const url = getCurrentURL();
-    //addToStorage(url);
+    const url = await getCurrentURL();
+    addToStorage(url, "webpage");
   } catch (error) {
     console.error("Error getting current URL", error);
   }
