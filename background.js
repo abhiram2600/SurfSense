@@ -38,7 +38,7 @@ const getDataFromStore = async () => {
         if (chrome.runtime.lastError) {
           reject(chrome.runtime.lastError);
         } else {
-          resolve(result.sitesData || []);
+          resolve(result.sitesData || { domain: [], webPage: [] });
         }
       });
     });
@@ -56,7 +56,10 @@ const getDataFromStore = async () => {
     return { sitesData, sitesInfo };
   } catch (error) {
     console.error("Error fetching data from storage:", error);
-    return { sitesData: [], sitesInfo: { prod: [], nonProd: [] } };
+    return {
+      sitesData: { domain: [], webPage: [] },
+      sitesInfo: { prod: [], nonProd: [] },
+    };
   }
 };
 
@@ -112,6 +115,15 @@ const saveDataToStore = async (url, timeSpent) => {
   saveDataSetOperation(sitesInfo);
 };
 
+const urlFilter = () => {
+  let url = currentWebsite.url;
+  let pattern = /^chrome:\/\//;
+  if (!url || pattern.test(url)) {
+    return true;
+  }
+  return false;
+};
+
 const stopTimer = (tb) => {
   let endTime = Date.now();
   let timeSpent = endTime - startTime;
@@ -122,7 +134,11 @@ const stopTimer = (tb) => {
     return;
   }
 
-  saveDataToStore(currentWebsite, time);
+  if (urlFilter()) {
+    return;
+  }
+
+  saveDataToStore(currentWebsite, timeSpent);
   console.log("time spent on ", currentWebsite.url, " is ", timeSpent);
 };
 

@@ -1,16 +1,20 @@
 const clearSiteData = () => {
-  chrome.storage.local.remove("sitesData");
-  loadContent();
+  let sitesData = { domain: [], webPage: [] };
+  chrome.storage.local.set({ sitesData: sitesData }, () => {
+    console.log("Site cleared");
+    loadContent();
+  });
 };
 
 const loadContent = () => {
   chrome.storage.local.get(
     ("sitesData",
     (result) => {
-      let sitesData = result.sitesData || [];
+      let sitesData = result.sitesData || { domain: [], webPage: [] };
       let ulElement = document.getElementById("siteList");
       ulElement.innerHTML = "";
-      sitesData.forEach(({ id, url }) => {
+      let combinedData = sitesData.webPage.concat(sitesData.domain);
+      combinedData.forEach(({ id, url }) => {
         let liElement = document.createElement("li");
 
         let pElement = document.createElement("p");
@@ -33,9 +37,10 @@ const loadContent = () => {
 
 const removeSite = (id) => {
   chrome.storage.local.get("sitesData", (result) => {
-    let sitesData = result.sitesData || [];
-    let updatedData = sitesData.filter((item) => item.id !== id);
-    chrome.storage.local.set({ sitesData: updatedData }, () => {
+    let sitesData = result.sitesData || { domain: [], webPage: [] };
+    sitesData.webPage = sitesData.webPage.filter((item) => item.id !== id);
+    sitesData.domain = sitesData.domain.filter((item) => item.id !== id);
+    chrome.storage.local.set({ sitesData: sitesData }, () => {
       console.log("Site removed:", id);
       loadContent();
     });

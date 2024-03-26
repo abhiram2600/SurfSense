@@ -14,11 +14,10 @@ const addToStorage = (site, type) => {
         if (existingSite) {
           return;
         }
-        sitesData.domain.push({ id: uuid, url: site });
-
         const uuid = uniqueId();
+        sitesData.domain.push({ id: uuid, url: site });
       } else {
-        const existingSite = sitesData.webPage.domain.find(
+        const existingSite = sitesData.webPage.find(
           (item) => item.url === site
         );
         if (existingSite) {
