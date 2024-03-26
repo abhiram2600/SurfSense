@@ -1,3 +1,7 @@
+const getDefaultSitesInfo = () => {
+  return { prod: { urlArr: [], time: 0 }, nonProd: { urlArr: [], time: 0 } };
+};
+
 const urlParser = (url) => {
   const parsedUrl = new URL(url);
   const domain = parsedUrl.hostname;
@@ -48,7 +52,7 @@ const getDataFromStore = async () => {
         if (chrome.runtime.lastError) {
           reject(chrome.runtime.lastError);
         } else {
-          resolve(result.sitesInfo || { prod: [], nonProd: [] });
+          resolve(result.sitesInfo || getDefaultSitesInfo());
         }
       });
     });
@@ -58,7 +62,7 @@ const getDataFromStore = async () => {
     console.error("Error fetching data from storage:", error);
     return {
       sitesData: { domain: [], webPage: [] },
-      sitesInfo: { prod: [], nonProd: [] },
+      sitesInfo: getDefaultSitesInfo(),
     };
   }
 };
@@ -69,6 +73,7 @@ If a certain url is in array, find the index in the arr and append time
 if it is not there, create a new object of url and time and append to the arr
 */
 const customArrOperation = (arr, url, time) => {
+  console.log(arr);
   let idx = arr.urlArr.findIndex((item) => item.url === url);
   if (idx !== -1) {
     arr.urlArr[idx].timeSpent += time;
@@ -105,8 +110,8 @@ const saveDataToStore = async (url, timeSpent) => {
     }
     // it means it is not a productive site, add it to unproductive list
     else {
-      sitesInfo.unProd = customArrOperation(
-        sitesInfo.unProd,
+      sitesInfo.nonProd = customArrOperation(
+        sitesInfo.nonProd,
         parsedUrl,
         timeSpent
       );
@@ -124,7 +129,7 @@ const urlFilter = () => {
   return false;
 };
 
-const stopTimer = (tb) => {
+const stopTimer = () => {
   let endTime = Date.now();
   let timeSpent = endTime - startTime;
 
@@ -138,7 +143,7 @@ const stopTimer = (tb) => {
     return;
   }
 
-  saveDataToStore(currentWebsite, timeSpent);
+  saveDataToStore(currentWebsite.url, timeSpent);
   console.log("time spent on ", currentWebsite.url, " is ", timeSpent);
 };
 

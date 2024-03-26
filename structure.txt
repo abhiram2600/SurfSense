@@ -1,0 +1,20 @@
+Structure for sitesData:
+
+sitesData: {
+    domain: 
+        [{id: string, url: string}]...
+    ,
+    webPage: 
+        [{id: string, url: string}]...
+}
+
+sitesInfo: {
+    nonProd: {
+        urlArr: [{url: string, timeSpent: number}],
+        time: number
+    },
+    prod: {
+        urlArr: [{url: string, timeSpent: number}],
+        time: number
+    }
+}
