@@ -60,6 +60,23 @@ const addCurrentWebpage = async () => {
   }
 };
 
+const loadContent = () => {
+  chrome.storage.local.get("sitesInfo", (result) => {
+    let sitesInfo = result.sitesInfo || {
+      prod: { urlArr: [], time: 0 },
+      nonProd: { urlArr: [], time: 0 },
+    };
+    document.getElementById("prodTime").innerText =
+      sitesInfo.prod.time.toString();
+    document.getElementById("nonProdTime").innerText =
+      sitesInfo.nonProd.time.toString();
+  });
+};
+
+document.addEventListener("DOMContentLoaded", () => {
+  loadContent();
+});
+
 document
   .getElementById("addWebsiteButton")
   .addEventListener("click", addWebsite);
