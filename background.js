@@ -1,6 +1,21 @@
+// Default Values ///////////
+
 const getDefaultSitesInfo = () => {
   return { prod: { urlArr: [], time: 0 }, nonProd: { urlArr: [], time: 0 } };
 };
+
+const getDefaultCurrentWebsiteData = () => {
+  return {
+    id: null,
+    url: null,
+    status: loadStatus.EMPTY,
+    startTime: null,
+  };
+};
+
+////////////////////////////
+
+// URL Filter /////////////
 
 const urlParser = (url) => {
   const parsedUrl = new URL(url);
@@ -8,32 +23,88 @@ const urlParser = (url) => {
   return domain;
 };
 
-let startTime = null;
+//If URL found in the pattern, return true. Else, return false.
+const urlFilter = (currentWebsite) => {
+  if (!currentWebsite.url) {
+    return false;
+  }
+  let url = currentWebsite.url;
+  let pattern = /^chrome:\/\//;
+  if (pattern.test(url)) {
+    return true;
+  }
+  return false;
+};
+
+//////////////////////////////
+
+// Constants /////////////////
+
 const loadStatus = {
   INITIAL: "initial",
   LOADED: "loaded",
   EMPTY: "empty",
 };
 
-let currentWebsite = {
-  id: null,
-  url: null,
-  status: loadStatus.EMPTY,
+//////////////////////////////
+
+// CurrentWebsiteData Operations
+
+const getCurrentWebsiteFromStore = async () => {
+  const currentWebsiteData = await new Promise((resolve, reject) => {
+    chrome.storage.local.get("currentWebsite", (result) => {
+      if (chrome.runtime.lastError) {
+        reject(chrome.runtime.lastError);
+      } else {
+        resolve(result.currentWebsite || getDefaultCurrentWebsiteData());
+      }
+    });
+  });
+  return currentWebsiteData;
 };
 
-const setCurrentWebsite = ({
-  tabId = currentWebsite.id,
-  tabUrl,
-  tabStatus,
-}) => {
-  currentWebsite.id = tabId;
+const setCurrentWebsiteToStore = async (data) => {
+  chrome.storage.local.set({ currentWebsite: data }, () => {
+    console.log("currentwebsite data updated");
+  });
+};
+
+const setCurrentWebsite = ({ currentWebsite, tabId, tabUrl, tabStatus }) => {
+  currentWebsite.id = tabId ?? currentWebsite.id;
   currentWebsite.url = tabUrl;
   currentWebsite.status = tabStatus;
+  setCurrentWebsiteToStore(currentWebsite);
 };
 
-const startTimer = () => {
-  startTime = Date.now();
+/////////////////////////////
+
+// Timer Operations /////////
+
+const startTimer = (currentWebsite) => {
+  currentWebsite.startTime = Date.now();
+  setCurrentWebsiteToStore(currentWebsite);
 };
+
+const stopTimer = (currentWebsite) => {
+  if (!currentWebsite.url || urlFilter(currentWebsite)) {
+    return;
+  }
+  let endTime = Date.now();
+  let timeSpent = (endTime - currentWebsite.startTime) / 60000;
+
+  // Minimum 1 minute should be spent on a website for it to be considered
+  // const minimumTime = 1;
+  // if (timeSpent < minimumTime) {
+  //   return;
+  // }
+
+  // console.log("time spent on ", currentWebsite.url, " is ", timeSpent);
+  saveDataToStore(currentWebsite.url, timeSpent);
+};
+
+//////////////////////////////
+
+// Get/Set Data (sitesInfo, sitesData) From Store. Custom Operations to Aid this functionality //
 
 const getDataFromStore = async () => {
   try {
@@ -73,7 +144,6 @@ If a certain url is in array, find the index in the arr and append time
 if it is not there, create a new object of url and time and append to the arr
 */
 const customArrOperation = (arr, url, time) => {
-  console.log(arr);
   let idx = arr.urlArr.findIndex((item) => item.url === url);
   if (idx !== -1) {
     arr.urlArr[idx].timeSpent += time;
@@ -87,7 +157,7 @@ const customArrOperation = (arr, url, time) => {
 
 const saveDataSetOperation = (data) => {
   chrome.storage.local.set({ sitesInfo: data }, () => {
-    console.log("saved");
+    console.log("saved", data);
   });
 };
 
@@ -120,34 +190,12 @@ const saveDataToStore = async (url, timeSpent) => {
   saveDataSetOperation(sitesInfo);
 };
 
-const urlFilter = () => {
-  let url = currentWebsite.url;
-  let pattern = /^chrome:\/\//;
-  if (!url || pattern.test(url)) {
-    return true;
-  }
-  return false;
-};
+///////////////////////////////////////////
 
-const stopTimer = () => {
-  let endTime = Date.now();
-  let timeSpent = endTime - startTime;
+// Main Logic /////////////////////////////
 
-  // Minimum 1 minute should be spent on a website for it to be considered
-  const minimumTime = 1;
-  if (timeSpent / 60000 < minimumTime) {
-    return;
-  }
-
-  if (urlFilter()) {
-    return;
-  }
-
-  saveDataToStore(currentWebsite.url, timeSpent);
-  console.log("time spent on ", currentWebsite.url, " is ", timeSpent);
-};
-
-chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
+  const currentWebsite = await getCurrentWebsiteFromStore();
   // NEW WEBSITE, UPDATE WEBSITE, RELOAD WEBSITE
   if (
     currentWebsite?.id &&
@@ -155,21 +203,25 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
     tab.url &&
     tab.status === "complete"
   ) {
-    // console.log();
     // in case of new tab, setting a url
     if (currentWebsite.status === loadStatus.INITIAL) {
-      setCurrentWebsite({ tabUrl: tab.url, tabStatus: loadStatus.LOADED });
-      startTimer();
+      setCurrentWebsite({
+        currentWebsite,
+        tabUrl: tab.url,
+        tabStatus: loadStatus.LOADED,
+      });
+      startTimer(currentWebsite);
     } else if (
       currentWebsite.status === loadStatus.LOADED &&
       currentWebsite.url !== tab.url
     ) {
-      stopTimer();
+      stopTimer(currentWebsite);
       setCurrentWebsite({
+        currentWebsite,
         tabUrl: tab.url,
         tabStatus: loadStatus.LOADED,
       });
-      startTimer();
+      startTimer(currentWebsite);
     }
   }
 });
@@ -178,15 +230,19 @@ chrome.tabs.onActivated.addListener((activeInfo) => {
   // NEW WEBSITE, CHANGE WEBSITE
 
   /* For tab change */
-  chrome.tabs.get(activeInfo.tabId, (tab) => {
+  chrome.tabs.get(activeInfo.tabId, async (tab) => {
+    const currentWebsite = await getCurrentWebsiteFromStore();
     if (tab.id !== currentWebsite.id) {
-      stopTimer();
+      stopTimer(currentWebsite);
     }
     setCurrentWebsite({
+      currentWebsite,
       tabId: tab.id,
       tabUrl: tab.url ?? null,
       tabStatus: loadStatus.INITIAL,
     });
-    startTimer();
+    startTimer(currentWebsite);
   });
 });
+
+////////////////////////////////////////

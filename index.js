@@ -66,10 +66,12 @@ const loadContent = () => {
       prod: { urlArr: [], time: 0 },
       nonProd: { urlArr: [], time: 0 },
     };
-    document.getElementById("prodTime").innerText =
-      sitesInfo.prod.time.toString();
-    document.getElementById("nonProdTime").innerText =
-      sitesInfo.nonProd.time.toString();
+    document.getElementById("prodTime").innerText = Math.floor(
+      sitesInfo.prod.time
+    );
+    document.getElementById("nonProdTime").innerText = Math.floor(
+      sitesInfo.nonProd.time
+    );
   });
 };
 

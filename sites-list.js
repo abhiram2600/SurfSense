@@ -7,6 +7,7 @@ const loadToWebsite = (data, id) => {
   let siteListContainer = document.getElementById(id);
   siteListContainer.innerHTML = "";
   data.forEach(({ url, timeSpent }) => {
+    if (Math.floor(timeSpent) <= 0) return;
     let siteListItem = document.createElement("div");
     siteListItem.classList.add("site-list-item");
 
@@ -16,7 +17,7 @@ const loadToWebsite = (data, id) => {
 
     let timeSpentElement = document.createElement("div");
     timeSpentElement.classList.add("site-list-item-url");
-    timeSpentElement.textContent = `${timeSpent} ${
+    timeSpentElement.textContent = `${Math.floor(timeSpent)} ${
       timeSpent > 1 ? "mins" : "min"
     }`;
 
