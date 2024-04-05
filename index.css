@@ -1,6 +1,8 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700&display=swap");
+
 /* General styles */
 body {
-  font-family: "Roboto", sans-serif;
+  font-family: "Poppins", sans-serif;
   background-color: #f9f9f9;
   margin: 0;
   padding: 0;
@@ -20,14 +22,16 @@ body {
 /* Title section styles */
 #title-container {
   text-align: center;
-  /* margin-bottom: 20px; */
 }
 
 #title {
-  font-size: 17px;
+  margin: 0;
+  margin-bottom: 5px;
+  font-size: 16px;
   font-weight: bold;
   color: #333;
   text-transform: uppercase;
+  font-weight: 500;
 }
 
 /* Separator styles */
@@ -37,41 +41,37 @@ body {
   margin: 0px 0;
 }
 
-/* Main section styles */
 #main-container {
   margin: 0 auto;
   max-width: 300px;
 }
 
 #main-container p {
-  /* margin-bottom: 15px; */
   line-height: 1.5;
 }
 
 .action-buttons {
   text-align: center;
-  /* margin-bottom: 30px; */
 }
 
 .action-buttons button {
   padding: 10px 20px;
-  background-color: #c3e6cb; /* Light green color */
+  background-color: #c3e6cb;
   color: #155724;
   border: none;
   border-radius: 5px;
   cursor: pointer;
-  /* margin: 0 10px; */
   transition: background-color 0.3s ease;
 }
 
 .action-buttons button:hover {
-  background-color: #b1dfbb; /* Lighter shade on hover */
+  background-color: #b1dfbb;
 }
 
 .button-description {
   margin-top: 8px;
   font-size: 10px;
-  color: #555; /* Dark gray text color */
+  color: #555;
 }
 
 .statistics {
@@ -85,7 +85,6 @@ body {
 }
 
 .statistics p {
-  margin-bottom: 8px;
   color: #666;
 }
 
@@ -101,4 +100,37 @@ body {
 
 #editLink:hover {
   color: #0056b3;
+}
+
+.container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.transparent-btn {
+  background-color: transparent;
+  color: #007bff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.transparent-btn i {
+  color: #000;
+  margin-right: 5px;
+}
+
+.transparent-btn:hover {
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+#prodTime,
+#nonProdTime {
+  font-weight: 500;
+}
+
+.statistics {
+  margin-bottom: 15px;
 }

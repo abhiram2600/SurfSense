@@ -1,8 +1,17 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700&display=swap");
+
 body {
-  font-family: "Roboto", sans-serif;
+  font-family: "Poppins", sans-serif;
+  font-weight: 500;
   background-color: #f9f9f9;
   margin: 0;
   padding: 0;
+}
+
+.heading-text {
+  text-align: center;
+  font-size: 13px;
+  font-weight: 500;
 }
 
 #root-container {
@@ -22,15 +31,69 @@ body {
 
 #clearAllButton {
   padding: 10px 20px;
-  background-color: #c3e6cb; /* Light green color */
+  background-color: #e6c3c3; /* Light green color */
   color: #155724;
   border: none;
   border-radius: 5px;
   cursor: pointer;
-  /* margin: 0 10px; */
   transition: background-color 0.3s ease;
+  margin: 0 auto; /* Center the button horizontally */
+  display: block;
 }
 
 #clearAllButton:hover {
-  background-color: #b1dfbb; /* Lighter shade on hover */
+  background-color: #dfb1b1; /* Lighter shade on hover */
+}
+
+/* data styles */
+.site-list-container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  text-align: center;
+  font-weight: 400;
+}
+
+.site-list-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+}
+
+.site-list-item-url {
+  flex-grow: 1;
+  margin-right: 10px;
+  font-weight: 400;
+}
+
+.site-list-item-button {
+  margin-left: 10px;
+}
+
+.site-list-item-button {
+  margin: 0 auto; /* Center the button horizontally */
+  display: block; /* Ensure the button takes up the full width */
+  padding: 3.5px 12px; /* Adjust padding for a compact look */
+  background-color: #dc3545; /* Red color for contrast */
+  color: #fff; /* White text for contrast */
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.site-list-item-button:hover {
+  background-color: #c82333; /* Darker red on hover */
+}
+
+#backButton {
+  background: none !important;
+  border: none;
+  padding: 0 !important;
+  /*optional*/
+  /* font-family: arial, sans-serif; */
+  /*input has OS specific font-family*/
+  color: rgb(0, 170, 255);
+  cursor: pointer;
 }

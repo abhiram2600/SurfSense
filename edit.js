@@ -1,7 +1,7 @@
 const clearSiteData = () => {
   let sitesData = { domain: [], webPage: [] };
   chrome.storage.local.set({ sitesData: sitesData }, () => {
-    console.log("Site cleared");
+    //console.log("Site cleared");
     loadContent();
   });
 };
@@ -11,25 +11,28 @@ const loadContent = () => {
     ("sitesData",
     (result) => {
       let sitesData = result.sitesData || { domain: [], webPage: [] };
-      let ulElement = document.getElementById("siteList");
-      ulElement.innerHTML = "";
+      let siteListContainer = document.getElementById("siteList");
+      siteListContainer.innerHTML = "";
       let combinedData = sitesData.webPage.concat(sitesData.domain);
       combinedData.forEach(({ id, url }) => {
-        let liElement = document.createElement("li");
+        let siteListItem = document.createElement("div");
+        siteListItem.classList.add("site-list-item");
 
-        let pElement = document.createElement("p");
-        pElement.textContent = url;
+        let urlElement = document.createElement("div");
+        urlElement.classList.add("site-list-item-url");
+        urlElement.textContent = url;
 
         let buttonElement = document.createElement("button");
+        buttonElement.classList.add("site-list-item-button");
         buttonElement.textContent = "Remove";
         buttonElement.addEventListener("click", () => {
           removeSite(id);
         });
 
-        liElement.appendChild(pElement);
-        liElement.appendChild(buttonElement);
+        siteListItem.appendChild(urlElement);
+        siteListItem.appendChild(buttonElement);
 
-        ulElement.appendChild(liElement);
+        siteListContainer.appendChild(siteListItem);
       });
     })
   );
@@ -41,7 +44,7 @@ const removeSite = (id) => {
     sitesData.webPage = sitesData.webPage.filter((item) => item.id !== id);
     sitesData.domain = sitesData.domain.filter((item) => item.id !== id);
     chrome.storage.local.set({ sitesData: sitesData }, () => {
-      console.log("Site removed:", id);
+      //console.log("Site removed:", id);
       loadContent();
     });
   });

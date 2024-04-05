@@ -5,6 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>SurfSense</title>
     <link rel="stylesheet" href="index.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+    />
+
+    <!-- <link rel="stylesheet" href="fonts.css" /> -->
   </head>
   <body>
     <div id="root-container">
@@ -21,28 +27,39 @@
         </p>
 
         <div class="action-buttons">
-          <button type="button" id="addWebsiteButton">
-            Add Entire Website
-          </button>
+          <button type="button" id="addWebsiteButton">Add Domain</button>
           <p class="button-description">Adds Domain (e.g: www.xyz.com)</p>
 
           <button type="button" id="addCurrentWebpageButton">
             Add Current Webpage
           </button>
           <p class="button-description">
-            Adds only current weboage(e.g: www.xyz.com/api/docs/)
+            Adds only current webpage(e.g: www.xyz.com/api/docs/)
           </p>
         </div>
         <div class="statistics">
           <h2>Today's Statistics</h2>
-          <p>
-            <strong>Productive Time:</strong> <span id="prodTime">00:00</span>
-          </p>
-          <p>
-            <strong>Non-Productive Time:</strong>
-            <span id="nonProdTime">00:00</span>
-          </p>
+          <div class="container">
+            <div>
+              <p>
+                <strong
+                  >Productive Time: <span id="prodTime">0</span> minutes</strong
+                >
+              </p>
+              <p>
+                <strong
+                  >Non-Productive Time:
+                  <span id="nonProdTime">0</span> minutes</strong
+                >
+              </p>
+            </div>
+            <a href="sites-list.html" class="transparent-btn">
+              <i class="fas fa-arrow-right"></i>
+            </a>
+          </div>
         </div>
+
+        <!-- <button type="button" id="reset">ResetEverything</button> -->
 
         <div class="edit-link">
           <a href="edit.html" id="editLink">Edit Website List</a>

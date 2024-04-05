@@ -28,7 +28,7 @@ const addToStorage = (site, type) => {
         sitesData.webPage.push({ id: uuid, url: site });
       }
       chrome.storage.local.set({ sitesData }, () => {
-        console.log("Added website");
+        //console.log("Added website");
       });
     })
   );
@@ -84,6 +84,18 @@ document
 document
   .getElementById("addCurrentWebpageButton")
   .addEventListener("click", addCurrentWebpage);
+
+const reset = () => {
+  chrome.storage.local.set({
+    sitesInfo: {
+      prod: { urlArr: [], time: 0 },
+      nonProd: { urlArr: [], time: 0 },
+    },
+  });
+  chrome.storage.local.set({ sitesData: { domain: [], webPage: [] } });
+};
+
+// document.getElementById("reset").addEventListener("click", reset);
 
 // only for testing
 
