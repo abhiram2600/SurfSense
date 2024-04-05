@@ -29,6 +29,15 @@ const addToStorage = (site, type) => {
       }
       chrome.storage.local.set({ sitesData }, () => {
         //console.log("Added website");
+        let element = document.getElementById(
+          type === "domain" ? "doneDomain" : "doneUrl"
+        );
+        element.style.display = "block";
+
+        // Set a timeout to hide the element after 5 seconds
+        setTimeout(function () {
+          element.style.display = "none";
+        }, 1500);
       });
     })
   );

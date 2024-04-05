@@ -134,3 +134,18 @@ body {
 .statistics {
   margin-bottom: 15px;
 }
+
+/* Hide the element initially */
+.success-message {
+  display: none;
+  color: rgb(1, 174, 1);
+  text-align: center;
+  margin-left: 10px;
+}
+
+.button-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+}

@@ -27,12 +27,18 @@
         </p>
 
         <div class="action-buttons">
-          <button type="button" id="addWebsiteButton">Add Domain</button>
+          <div class="button-container">
+            <button type="button" id="addWebsiteButton">Add Domain</button>
+            <div id="doneDomain" class="success-message">Done</div>
+          </div>
           <p class="button-description">Adds Domain (e.g: www.xyz.com)</p>
 
-          <button type="button" id="addCurrentWebpageButton">
-            Add Current Webpage
-          </button>
+          <div class="button-container">
+            <button type="button" id="addCurrentWebpageButton">
+              Add Current Webpage
+            </button>
+            <div id="doneUrl" class="success-message">Done</div>
+          </div>
           <p class="button-description">
             Adds only current webpage(e.g: www.xyz.com/api/docs/)
           </p>
