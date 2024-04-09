@@ -44,7 +44,6 @@ const removeSite = (id) => {
     sitesData.webPage = sitesData.webPage.filter((item) => item.id !== id);
     sitesData.domain = sitesData.domain.filter((item) => item.id !== id);
     chrome.storage.local.set({ sitesData: sitesData }, () => {
-      //console.log("Site removed:", id);
       loadContent();
     });
   });

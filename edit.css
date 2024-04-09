@@ -62,6 +62,10 @@ body {
 }
 
 .site-list-item-url {
+  max-width: 140px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
   flex-grow: 1;
   margin-right: 10px;
   font-weight: 400;
@@ -72,11 +76,11 @@ body {
 }
 
 .site-list-item-button {
-  margin: 0 auto; /* Center the button horizontally */
-  display: block; /* Ensure the button takes up the full width */
-  padding: 3.5px 12px; /* Adjust padding for a compact look */
-  background-color: #dc3545; /* Red color for contrast */
-  color: #fff; /* White text for contrast */
+  margin: 0 auto;
+  display: block;
+  padding: 3.5px 12px;
+  background-color: #dc3545;
+  color: #fff;
   border: none;
   border-radius: 4px;
   cursor: pointer;
@@ -84,16 +88,13 @@ body {
 }
 
 .site-list-item-button:hover {
-  background-color: #c82333; /* Darker red on hover */
+  background-color: #c82333;
 }
 
 #backButton {
   background: none !important;
   border: none;
   padding: 0 !important;
-  /*optional*/
-  /* font-family: arial, sans-serif; */
-  /*input has OS specific font-family*/
   color: rgb(0, 170, 255);
   cursor: pointer;
 }

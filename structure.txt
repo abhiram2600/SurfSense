@@ -1,4 +1,4 @@
-Structure for sitesData:
+Structure for each object stored in chrome local storage.
 
 sitesData: {
     domain: 
@@ -17,4 +17,11 @@ sitesInfo: {
         urlArr: [{url: string, timeSpent: number}],
         time: number
     }
+}
+
+currentWebsite: {
+    id: string,
+    url: string,
+    status: loadStatus,
+    startTime: string,
 }

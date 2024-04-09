@@ -105,12 +105,3 @@ const reset = () => {
   });
   chrome.storage.local.set({ sitesData: { domain: [], webPage: [] } });
 };
-
-// document.getElementById("reset").addEventListener("click", reset);
-
-// only for testing
-
-// let ele = document.getElementById("abc");
-// ele.textContent = domain;
-
-//
