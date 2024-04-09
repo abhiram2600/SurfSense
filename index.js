@@ -1,3 +1,5 @@
+import { defaultValues } from "./utils.js";
+
 const uniqueId = () => {
   const dateString = Date.now().toString(36).substring(2, 9);
   const randomness = Math.random().toString(36).substring(2, 9);
@@ -8,7 +10,7 @@ const addToStorage = (site, type) => {
   chrome.storage.local.get(
     ("sitesData",
     (result) => {
-      let sitesData = result.sitesData || { domain: [], webPage: [] };
+      let sitesData = result.sitesData || defaultValues.sitesData;
       if (type === "domain") {
         const existingSite = sitesData.domain.find((item) => item.url === site);
         if (existingSite) {
@@ -71,10 +73,7 @@ const addCurrentWebpage = async () => {
 
 const loadContent = () => {
   chrome.storage.local.get("sitesInfo", (result) => {
-    let sitesInfo = result.sitesInfo || {
-      prod: { urlArr: [], time: 0 },
-      nonProd: { urlArr: [], time: 0 },
-    };
+    let sitesInfo = result.sitesInfo || defaultValues.sitesInfo;
     document.getElementById("prodTime").innerText = Math.floor(
       sitesInfo.prod.time
     );

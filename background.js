@@ -1,19 +1,4 @@
-// Default Values ///////////
-
-const getDefaultSitesInfo = () => {
-  return { prod: { urlArr: [], time: 0 }, nonProd: { urlArr: [], time: 0 } };
-};
-
-const getDefaultCurrentWebsiteData = () => {
-  return {
-    id: null,
-    url: null,
-    status: loadStatus.EMPTY,
-    startTime: null,
-  };
-};
-
-////////////////////////////
+import { defaultValues, loadStatus } from "./utils.js";
 
 // URL Filter /////////////
 
@@ -38,16 +23,6 @@ const urlFilter = (currentWebsite) => {
 
 //////////////////////////////
 
-// Constants /////////////////
-
-const loadStatus = {
-  INITIAL: "initial",
-  LOADED: "loaded",
-  EMPTY: "empty",
-};
-
-//////////////////////////////
-
 // CurrentWebsiteData Operations
 
 const getCurrentWebsiteFromStore = async () => {
@@ -56,7 +31,15 @@ const getCurrentWebsiteFromStore = async () => {
       if (chrome.runtime.lastError) {
         reject(chrome.runtime.lastError);
       } else {
-        resolve(result.currentWebsite || getDefaultCurrentWebsiteData());
+        let currentWebsite =
+          result.currentWebsite || defaultValues.currentWebsite;
+        if (
+          currentWebsite.lastAccessedDate !== new Date().toLocaleDateString()
+        ) {
+          currentWebsite.lastAccessedDate = new Date().toLocaleDateString();
+          resetData(currentWebsite);
+        }
+        resolve(currentWebsite);
       }
     });
   });
@@ -104,7 +87,7 @@ const stopTimer = (currentWebsite) => {
 
 //////////////////////////////
 
-// Get/Set Data (sitesInfo, sitesData) From Store. Custom Operations to Aid this functionality //
+// Get/Set Data (sitesInfo, sitesData) From Store and Custom Operations to Aid this functionality //
 
 const getDataFromStore = async () => {
   try {
@@ -113,7 +96,7 @@ const getDataFromStore = async () => {
         if (chrome.runtime.lastError) {
           reject(chrome.runtime.lastError);
         } else {
-          resolve(result.sitesData || { domain: [], webPage: [] });
+          resolve(result.sitesData || defaultValues.sitesData);
         }
       });
     });
@@ -123,7 +106,7 @@ const getDataFromStore = async () => {
         if (chrome.runtime.lastError) {
           reject(chrome.runtime.lastError);
         } else {
-          resolve(result.sitesInfo || getDefaultSitesInfo());
+          resolve(result.sitesInfo || defaultValues.sitesInfo);
         }
       });
     });
@@ -132,8 +115,8 @@ const getDataFromStore = async () => {
   } catch (error) {
     console.error("Error fetching data from storage:", error);
     return {
-      sitesData: { domain: [], webPage: [] },
-      sitesInfo: getDefaultSitesInfo(),
+      sitesData: defaultValues.sitesData,
+      sitesInfo: defaultValues.sitesInfo,
     };
   }
 };
@@ -244,5 +227,16 @@ chrome.tabs.onActivated.addListener((activeInfo) => {
     startTimer(currentWebsite);
   });
 });
+
+////////////////////////////////////////
+
+// Reset Data (Everyday) ///////////////
+
+const resetData = (currentWebsite) => {
+  chrome.storage.local.set({
+    sitesInfo: defaultValues.sitesInfo,
+  });
+  chrome.storage.local.set({ currentWebsite: currentWebsite });
+};
 
 ////////////////////////////////////////

@@ -1,3 +1,5 @@
+import { defaultValues } from "./utils.js";
+
 const loadToWebsite = (data, id) => {
   if (data.length === 0) {
     return;
@@ -65,10 +67,7 @@ const removeSiteData = (url, id) => {
 
 const loadContent = () => {
   chrome.storage.local.get("sitesInfo", (result) => {
-    result = result.sitesInfo || {
-      prod: { urlArr: [], time: 0 },
-      nonProd: { urlArr: [], time: 0 },
-    };
+    result = result.sitesInfo || defaultValues.sitesInfo;
     loadToWebsite(result.prod.urlArr, "siteListProd");
     loadToWebsite(result.nonProd.urlArr, "siteListNonProd");
   });

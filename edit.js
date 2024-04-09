@@ -1,3 +1,5 @@
+import { defaultValues } from "./utils.js";
+
 const clearSiteData = () => {
   let sitesData = { domain: [], webPage: [] };
   chrome.storage.local.set({ sitesData: sitesData }, () => {
@@ -10,7 +12,7 @@ const loadContent = () => {
   chrome.storage.local.get(
     ("sitesData",
     (result) => {
-      let sitesData = result.sitesData || { domain: [], webPage: [] };
+      let sitesData = result.sitesData || defaultValues.sitesData;
       let siteListContainer = document.getElementById("siteList");
       siteListContainer.innerHTML = "";
       let combinedData = sitesData.webPage.concat(sitesData.domain);
@@ -40,7 +42,7 @@ const loadContent = () => {
 
 const removeSite = (id) => {
   chrome.storage.local.get("sitesData", (result) => {
-    let sitesData = result.sitesData || { domain: [], webPage: [] };
+    let sitesData = result.sitesData || defaultValues.sitesData;
     sitesData.webPage = sitesData.webPage.filter((item) => item.id !== id);
     sitesData.domain = sitesData.domain.filter((item) => item.id !== id);
     chrome.storage.local.set({ sitesData: sitesData }, () => {
