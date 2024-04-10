@@ -1,12 +1,14 @@
 import { defaultValues } from "./utils.js";
 
 const loadToWebsite = (data, id) => {
+  let siteListContainer = document.getElementById(id);
+
   if (data.length === 0) {
+    siteListContainer.innerHTML = "Nothing Yet";
     return;
   }
   data.sort((a, b) => b.timeSpent - a.timeSpent);
   data = data.slice(0, 5);
-  let siteListContainer = document.getElementById(id);
   siteListContainer.innerHTML = "";
   data.forEach(({ url, timeSpent }) => {
     if (Math.floor(timeSpent) <= 0) return;

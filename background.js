@@ -48,25 +48,29 @@ const getCurrentWebsiteFromStore = async () => {
 
 const setCurrentWebsiteToStore = async (data) => {
   chrome.storage.local.set({ currentWebsite: data }, () => {
-    console.log("currentwebsite data updated");
+    if (chrome.runtime.lastError) {
+      console.error("Error ", chrome.runtime.lastError);
+    }
   });
 };
 
-const setCurrentWebsite = ({ currentWebsite, tabId, tabUrl, tabStatus }) => {
+const setCurrentWebsite = ({
+  currentWebsite,
+  tabId,
+  tabUrl,
+  tabStatus,
+  startTime,
+}) => {
   currentWebsite.id = tabId ?? currentWebsite.id;
-  currentWebsite.url = tabUrl;
-  currentWebsite.status = tabStatus;
+  currentWebsite.url = tabUrl ?? currentWebsite.url;
+  currentWebsite.status = tabStatus ?? currentWebsite.status;
+  currentWebsite.startTime = startTime ?? currentWebsite.startTime;
   setCurrentWebsiteToStore(currentWebsite);
 };
 
 /////////////////////////////
 
 // Timer Operations /////////
-
-const startTimer = (currentWebsite) => {
-  currentWebsite.startTime = Date.now();
-  setCurrentWebsiteToStore(currentWebsite);
-};
 
 const stopTimer = (currentWebsite) => {
   if (!currentWebsite.url || urlFilter(currentWebsite)) {
@@ -140,7 +144,9 @@ const customArrOperation = (arr, url, time) => {
 
 const saveDataSetOperation = (data) => {
   chrome.storage.local.set({ sitesInfo: data }, () => {
-    console.log("saved", data);
+    if (chrome.runtime.lastError) {
+      console.error("Error ", chrome.runtime.lastError);
+    }
   });
 };
 
@@ -192,8 +198,8 @@ chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
         currentWebsite,
         tabUrl: tab.url,
         tabStatus: loadStatus.LOADED,
+        startTime: Date.now(),
       });
-      startTimer(currentWebsite);
     } else if (
       currentWebsite.status === loadStatus.LOADED &&
       currentWebsite.url !== tab.url
@@ -203,34 +209,58 @@ chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
         currentWebsite,
         tabUrl: tab.url,
         tabStatus: loadStatus.LOADED,
+        startTime: Date.now(),
       });
-      startTimer(currentWebsite);
     }
   }
 });
 
 chrome.tabs.onActivated.addListener((activeInfo) => {
-  // NEW WEBSITE, CHANGE WEBSITE
-
-  /* For tab change */
+  // CHANGE TAB
   chrome.tabs.get(activeInfo.tabId, async (tab) => {
     const currentWebsite = await getCurrentWebsiteFromStore();
-    if (tab.id !== currentWebsite.id) {
-      stopTimer(currentWebsite);
-    }
+    stopTimer(currentWebsite);
+
     setCurrentWebsite({
       currentWebsite,
       tabId: tab.id,
       tabUrl: tab.url ?? null,
-      tabStatus: loadStatus.INITIAL,
+      tabStatus: tab.url ? loadStatus.LOADED : loadStatus.INITIAL,
+      startTime: Date.now(),
     });
-    startTimer(currentWebsite);
   });
 });
 
-////////////////////////////////////////
+////////////////////////////////////////////////////
 
-// Reset Data (Everyday) ///////////////
+// Out of focus/ Window change ////
+
+chrome.windows.onFocusChanged.addListener(async (windowId) => {
+  const currentWebsite = await getCurrentWebsiteFromStore();
+  if (windowId === chrome.windows.WINDOW_ID_NONE) {
+    stopTimer(currentWebsite);
+    setCurrentWebsite({
+      currentWebsite,
+      tabStatus: loadStatus.LOST_FOCUS,
+    });
+  } else {
+    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+      const activeTab = tabs[0];
+
+      setCurrentWebsite({
+        currentWebsite,
+        tabId: activeTab.id,
+        tabUrl: activeTab.url,
+        tabStatus: loadStatus.LOADED,
+        startTime: Date.now(),
+      });
+    });
+  }
+});
+
+////////////////////////////////////////////////////
+
+// Reset Data (Everyday reset data) ////////////////
 
 const resetData = (currentWebsite) => {
   chrome.storage.local.set({
@@ -239,4 +269,4 @@ const resetData = (currentWebsite) => {
   chrome.storage.local.set({ currentWebsite: currentWebsite });
 };
 
-////////////////////////////////////////
+////////////////////////////////////////////////////

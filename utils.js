@@ -1,11 +1,8 @@
-export const sayHello = () => {
-  console.log("Hlelo");
-};
-
 export const loadStatus = {
   INITIAL: "initial",
   LOADED: "loaded",
   EMPTY: "empty",
+  LOST_FOCUS: "lost_focus",
 };
 
 export const defaultValues = {
