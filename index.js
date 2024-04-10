@@ -1,10 +1,4 @@
-import { defaultValues, linkType } from "./utils.js";
-
-const uniqueId = () => {
-  const dateString = Date.now().toString(36).substring(2, 9);
-  const randomness = Math.random().toString(36).substring(2, 9);
-  return dateString + randomness;
-};
+import { defaultValues, linkType, uniqueId, parseTime } from "./utils.js";
 
 const editSitesInfo = (site) => {
   chrome.storage.local.get("sitesInfo", (result) => {
@@ -91,11 +85,11 @@ const addCurrentWebpage = async () => {
 const loadContent = () => {
   chrome.storage.local.get("sitesInfo", (result) => {
     let sitesInfo = result.sitesInfo || defaultValues.sitesInfo;
-    document.getElementById("prodTime").innerText = Math.floor(
-      sitesInfo.prod.time
+    document.getElementById("prodTime").innerText = parseTime(
+      Math.floor(sitesInfo.prod.time)
     );
-    document.getElementById("nonProdTime").innerText = Math.floor(
-      sitesInfo.nonProd.time
+    document.getElementById("nonProdTime").innerText = parseTime(
+      Math.floor(sitesInfo.nonProd.time)
     );
   });
 };

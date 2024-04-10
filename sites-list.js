@@ -1,4 +1,4 @@
-import { defaultValues } from "./utils.js";
+import { defaultValues, parseTime } from "./utils.js";
 
 const loadToWebsite = (data, id) => {
   let siteListContainer = document.getElementById(id);
@@ -21,9 +21,7 @@ const loadToWebsite = (data, id) => {
 
     let timeSpentElement = document.createElement("div");
     timeSpentElement.classList.add("site-list-item-url");
-    timeSpentElement.textContent = `${Math.floor(timeSpent)} ${
-      timeSpent > 1 ? "mins" : "min"
-    }`;
+    timeSpentElement.textContent = parseTime(Math.floor(timeSpent));
 
     let buttonElement = document.createElement("button");
     buttonElement.classList.add("site-list-item-button");
