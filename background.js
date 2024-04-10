@@ -78,14 +78,6 @@ const stopTimer = (currentWebsite) => {
   }
   let endTime = Date.now();
   let timeSpent = (endTime - currentWebsite.startTime) / 60000;
-
-  // Minimum 1 minute should be spent on a website for it to be considered
-  // const minimumTime = 1;
-  // if (timeSpent < minimumTime) {
-  //   return;
-  // }
-
-  // console.log("time spent on ", currentWebsite.url, " is ", timeSpent);
   saveDataToStore(currentWebsite.url, timeSpent);
 };
 

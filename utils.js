@@ -22,3 +22,8 @@ export const defaultValues = {
     lastAccessedDate: null,
   },
 };
+
+export const linkType = {
+  DOMAIN: "domain",
+  WEBPAGE: "webpage",
+};

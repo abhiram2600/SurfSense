@@ -3,7 +3,6 @@ import { defaultValues } from "./utils.js";
 const clearSiteData = () => {
   let sitesData = { domain: [], webPage: [] };
   chrome.storage.local.set({ sitesData: sitesData }, () => {
-    //console.log("Site cleared");
     loadContent();
   });
 };

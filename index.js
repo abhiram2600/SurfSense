@@ -1,4 +1,4 @@
-import { defaultValues } from "./utils.js";
+import { defaultValues, linkType } from "./utils.js";
 
 const uniqueId = () => {
   const dateString = Date.now().toString(36).substring(2, 9);
@@ -6,12 +6,28 @@ const uniqueId = () => {
   return dateString + randomness;
 };
 
+const editSitesInfo = (site) => {
+  chrome.storage.local.get("sitesInfo", (result) => {
+    let sitesInfo = result.sitesInfo || defaultValues.sitesInfo;
+    const idx = sitesInfo.nonProd.urlArr.findIndex((item) => item.url === site);
+    if (idx !== -1) {
+      const data = sitesInfo.nonProd.urlArr[idx];
+      sitesInfo.prod.urlArr.push(data);
+      sitesInfo.prod.time += data.timeSpent;
+      sitesInfo.nonProd.time -= data.timeSpent;
+      sitesInfo.nonProd.urlArr.splice(idx, 1);
+      chrome.storage.local.set({ sitesInfo });
+      loadContent();
+    }
+  });
+};
+
 const addToStorage = (site, type) => {
   chrome.storage.local.get(
     ("sitesData",
     (result) => {
       let sitesData = result.sitesData || defaultValues.sitesData;
-      if (type === "domain") {
+      if (type === linkType.DOMAIN) {
         const existingSite = sitesData.domain.find((item) => item.url === site);
         if (existingSite) {
           return;
@@ -30,16 +46,17 @@ const addToStorage = (site, type) => {
         sitesData.webPage.push({ id: uuid, url: site });
       }
       chrome.storage.local.set({ sitesData }, () => {
-        //console.log("Added website");
         let element = document.getElementById(
-          type === "domain" ? "doneDomain" : "doneUrl"
+          type === linkType.DOMAIN ? "doneDomain" : "doneUrl"
         );
         element.style.display = "block";
 
-        // Set a timeout to hide the element after 5 seconds
         setTimeout(function () {
           element.style.display = "none";
         }, 1500);
+        if (type === linkType.DOMAIN) {
+          editSitesInfo(site);
+        }
       });
     })
   );
@@ -56,7 +73,7 @@ const addWebsite = async () => {
     const url = await getCurrentURL();
     const parsedUrl = new URL(url);
     const domain = parsedUrl.hostname;
-    addToStorage(domain, "domain");
+    addToStorage(domain, linkType.DOMAIN);
   } catch (error) {
     console.error("Error getting current URL", error);
   }
@@ -65,7 +82,7 @@ const addWebsite = async () => {
 const addCurrentWebpage = async () => {
   try {
     const url = await getCurrentURL();
-    addToStorage(url, "webpage");
+    addToStorage(url, linkType.WEBPAGE);
   } catch (error) {
     console.error("Error getting current URL", error);
   }
@@ -94,13 +111,3 @@ document
 document
   .getElementById("addCurrentWebpageButton")
   .addEventListener("click", addCurrentWebpage);
-
-const reset = () => {
-  chrome.storage.local.set({
-    sitesInfo: {
-      prod: { urlArr: [], time: 0 },
-      nonProd: { urlArr: [], time: 0 },
-    },
-  });
-  chrome.storage.local.set({ sitesData: { domain: [], webPage: [] } });
-};
