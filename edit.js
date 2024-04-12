@@ -1,4 +1,4 @@
-import { defaultValues } from "./utils.js";
+import { defaultValues, storageKeys } from "./utils.js";
 
 const clearSiteData = () => {
   let sitesData = { domain: [], webPage: [] };
@@ -9,7 +9,7 @@ const clearSiteData = () => {
 
 const loadContent = () => {
   chrome.storage.local.get(
-    ("sitesData",
+    (storageKeys.SITESDATA,
     (result) => {
       let sitesData = result.sitesData || defaultValues.sitesData;
       let siteListContainer = document.getElementById("siteList");
@@ -40,7 +40,7 @@ const loadContent = () => {
 };
 
 const removeSite = (id) => {
-  chrome.storage.local.get("sitesData", (result) => {
+  chrome.storage.local.get(storageKeys.SITESDATA, (result) => {
     let sitesData = result.sitesData || defaultValues.sitesData;
     sitesData.webPage = sitesData.webPage.filter((item) => item.id !== id);
     sitesData.domain = sitesData.domain.filter((item) => item.id !== id);

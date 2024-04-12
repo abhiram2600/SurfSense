@@ -11,7 +11,7 @@ body {
 /* Root container styles */
 #root-container {
   width: 300px;
-  height: 400px;
+  height: 410px;
   overflow-y: auto;
   padding: 15px;
   background-color: #fff;
@@ -90,15 +90,13 @@ body {
 
 .edit-link {
   text-align: center;
-}
-
-#editLink {
-  color: #007bff;
+  color: #56d1f3;
   text-decoration: none;
   transition: color 0.3s ease;
+  margin-bottom: 6px;
 }
 
-#editLink:hover {
+.edit-link:hover {
   color: #0056b3;
 }
 
@@ -148,4 +146,10 @@ body {
   flex-direction: row;
   justify-content: center;
   align-items: center;
+}
+
+.links {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
 }

@@ -1,7 +1,13 @@
-import { defaultValues, linkType, uniqueId, parseTime } from "./utils.js";
+import {
+  defaultValues,
+  linkType,
+  uniqueId,
+  parseTime,
+  storageKeys,
+} from "./utils.js";
 
 const editSitesInfo = (site) => {
-  chrome.storage.local.get("sitesInfo", (result) => {
+  chrome.storage.local.get(storageKeys.SITESINFO, (result) => {
     let sitesInfo = result.sitesInfo || defaultValues.sitesInfo;
     const idx = sitesInfo.nonProd.urlArr.findIndex((item) => item.url === site);
     if (idx !== -1) {
@@ -18,7 +24,7 @@ const editSitesInfo = (site) => {
 
 const addToStorage = (site, type) => {
   chrome.storage.local.get(
-    ("sitesData",
+    (storageKeys.SITESDATA,
     (result) => {
       let sitesData = result.sitesData || defaultValues.sitesData;
       if (type === linkType.DOMAIN) {
@@ -83,7 +89,7 @@ const addCurrentWebpage = async () => {
 };
 
 const loadContent = () => {
-  chrome.storage.local.get("sitesInfo", (result) => {
+  chrome.storage.local.get(storageKeys.SITESINFO, (result) => {
     let sitesInfo = result.sitesInfo || defaultValues.sitesInfo;
     document.getElementById("prodTime").innerText = parseTime(
       Math.floor(sitesInfo.prod.time)
@@ -92,6 +98,14 @@ const loadContent = () => {
       Math.floor(sitesInfo.nonProd.time)
     );
   });
+};
+
+const setPreviousDayDataFlag = async (e) => {
+  e.preventDefault();
+  await chrome.storage.local.set({ isPreviousDayData: true });
+  try {
+    window.location.href = e.target.href;
+  } catch (e) {}
 };
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -105,3 +119,16 @@ document
 document
   .getElementById("addCurrentWebpageButton")
   .addEventListener("click", addCurrentWebpage);
+
+document
+  .getElementById("previousDay")
+  .addEventListener("click", setPreviousDayDataFlag);
+/*
+// For testing only
+const resetEverything = () => {
+  chrome.storage.local.set({ sitesInfo: defaultValues.sitesInfo });
+  chrome.storage.local.set({ currentWebsite: defaultValues.currentWebsite });
+};
+
+document.getElementById("reset").addEventListener("click", resetEverything)
+*/

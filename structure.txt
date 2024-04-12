@@ -25,3 +25,7 @@ currentWebsite: {
     status: loadStatus,
     startTime: string,
 }
+
+previousSitesInfo: sitesInfo
+
+isPreviousDayData: boolean

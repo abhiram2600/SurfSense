@@ -5,6 +5,19 @@ export const loadStatus = {
   LOST_FOCUS: "lost_focus",
 };
 
+export const linkType = {
+  DOMAIN: "domain",
+  WEBPAGE: "webpage",
+};
+
+export const storageKeys = {
+  SITESINFO: "sitesInfo",
+  SITESDATA: "sitesData",
+  CURRENTWEBSITE: "currentWebsite",
+  PREVIOUSSITESINFO: "previousSitesInfo",
+  ISPREVIOUSDAYDATA: "isPreviousDayData",
+};
+
 export const defaultValues = {
   sitesInfo: {
     prod: { urlArr: [], time: 0 },
@@ -21,11 +34,6 @@ export const defaultValues = {
     startTime: null,
     lastAccessedDate: null,
   },
-};
-
-export const linkType = {
-  DOMAIN: "domain",
-  WEBPAGE: "webpage",
 };
 
 export const uniqueId = () => {

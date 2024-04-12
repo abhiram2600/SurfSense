@@ -1,4 +1,4 @@
-import { defaultValues, loadStatus } from "./utils.js";
+import { defaultValues, loadStatus, storageKeys } from "./utils.js";
 
 // URL Filter /////////////
 
@@ -27,7 +27,7 @@ const urlFilter = (currentWebsite) => {
 
 const getCurrentWebsiteFromStore = async () => {
   const currentWebsiteData = await new Promise((resolve, reject) => {
-    chrome.storage.local.get("currentWebsite", (result) => {
+    chrome.storage.local.get(storageKeys.CURRENTWEBSITE, (result) => {
       if (chrome.runtime.lastError) {
         reject(chrome.runtime.lastError);
       } else {
@@ -88,7 +88,7 @@ const stopTimer = (currentWebsite) => {
 const getDataFromStore = async () => {
   try {
     const sitesData = await new Promise((resolve, reject) => {
-      chrome.storage.local.get("sitesData", (result) => {
+      chrome.storage.local.get(storageKeys.SITESDATA, (result) => {
         if (chrome.runtime.lastError) {
           reject(chrome.runtime.lastError);
         } else {
@@ -98,7 +98,7 @@ const getDataFromStore = async () => {
     });
 
     const sitesInfo = await new Promise((resolve, reject) => {
-      chrome.storage.local.get("sitesInfo", (result) => {
+      chrome.storage.local.get(storageKeys.SITESINFO, (result) => {
         if (chrome.runtime.lastError) {
           reject(chrome.runtime.lastError);
         } else {
@@ -255,10 +255,14 @@ chrome.windows.onFocusChanged.addListener(async (windowId) => {
 // Reset Data (Everyday reset data) ////////////////
 
 const resetData = (currentWebsite) => {
+  chrome.storage.local.get(storageKeys.SITESINFO, (result) => {
+    result = result.sitesInfo || defaultValues.sitesInfo;
+    chrome.storage.local.set({ previousSitesInfo: result });
+  });
+  chrome.storage.local.set({ currentWebsite: currentWebsite });
   chrome.storage.local.set({
     sitesInfo: defaultValues.sitesInfo,
   });
-  chrome.storage.local.set({ currentWebsite: currentWebsite });
 };
 
 ////////////////////////////////////////////////////

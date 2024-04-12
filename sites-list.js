@@ -1,4 +1,4 @@
-import { defaultValues, parseTime } from "./utils.js";
+import { defaultValues, parseTime, storageKeys } from "./utils.js";
 
 const loadToWebsite = (data, id) => {
   let siteListContainer = document.getElementById(id);
@@ -39,7 +39,7 @@ const loadToWebsite = (data, id) => {
 };
 
 const removeSiteData = (url, id) => {
-  chrome.storage.local.get("sitesInfo", (result) => {
+  chrome.storage.local.get(storageKeys.SITESINFO, (result) => {
     let sitesInfo = result.sitesInfo;
     if (id === "siteListProd") {
       sitesInfo.prod.urlArr = sitesInfo.prod.urlArr.filter((item) => {
@@ -66,10 +66,21 @@ const removeSiteData = (url, id) => {
 };
 
 const loadContent = () => {
-  chrome.storage.local.get("sitesInfo", (result) => {
-    result = result.sitesInfo || defaultValues.sitesInfo;
-    loadToWebsite(result.prod.urlArr, "siteListProd");
-    loadToWebsite(result.nonProd.urlArr, "siteListNonProd");
+  chrome.storage.local.get(storageKeys.ISPREVIOUSDAYDATA, (result) => {
+    if (result.isPreviousDayData) {
+      chrome.storage.local.set({ isPreviousDayData: false });
+      chrome.storage.local.get(storageKeys.PREVIOUSSITESINFO, (result) => {
+        result = result.previousSitesInfo || defaultValues.sitesInfo;
+        loadToWebsite(result.prod.urlArr, "siteListProd");
+        loadToWebsite(result.nonProd.urlArr, "siteListNonProd");
+      });
+    } else {
+      chrome.storage.local.get(storageKeys.SITESINFO, (result) => {
+        result = result.sitesInfo || defaultValues.sitesInfo;
+        loadToWebsite(result.prod.urlArr, "siteListProd");
+        loadToWebsite(result.nonProd.urlArr, "siteListNonProd");
+      });
+    }
   });
 };
 
