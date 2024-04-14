@@ -123,12 +123,12 @@ document
 document
   .getElementById("previousDay")
   .addEventListener("click", setPreviousDayDataFlag);
-/*
-// For testing only
-const resetEverything = () => {
-  chrome.storage.local.set({ sitesInfo: defaultValues.sitesInfo });
-  chrome.storage.local.set({ currentWebsite: defaultValues.currentWebsite });
-};
 
-document.getElementById("reset").addEventListener("click", resetEverything)
-*/
+// // For testing only
+// const resetEverything = () => {
+//   chrome.storage.local.set({ sitesInfo: defaultValues.sitesInfo });
+//   chrome.storage.local.set({ currentWebsite: defaultValues.currentWebsite });
+//   chrome.storage.local.set({sitesData: defaultValues.sitesData})
+// };
+
+// document.getElementById("reset").addEventListener("click", resetEverything)

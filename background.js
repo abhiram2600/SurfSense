@@ -64,6 +64,9 @@ const setCurrentWebsite = ({
   currentWebsite.id = tabId ?? currentWebsite.id;
   currentWebsite.url = tabUrl ?? currentWebsite.url;
   currentWebsite.status = tabStatus ?? currentWebsite.status;
+  if (startTime) {
+    console.log("time started at ", currentWebsite.url);
+  }
   currentWebsite.startTime = startTime ?? currentWebsite.startTime;
   setCurrentWebsiteToStore(currentWebsite);
 };
@@ -78,6 +81,8 @@ const stopTimer = (currentWebsite) => {
   }
   let endTime = Date.now();
   let timeSpent = (endTime - currentWebsite.startTime) / 60000;
+
+  console.log("time stopped at ", currentWebsite.url, timeSpent);
   saveDataToStore(currentWebsite.url, timeSpent);
 };
 

@@ -1,6 +1,6 @@
 import { defaultValues, parseTime, storageKeys } from "./utils.js";
 
-const loadToWebsite = (data, id) => {
+const loadToWebsite = (data, id, isPreviousDayData) => {
   let siteListContainer = document.getElementById(id);
 
   if (data.length === 0) {
@@ -27,7 +27,7 @@ const loadToWebsite = (data, id) => {
     buttonElement.classList.add("site-list-item-button");
     buttonElement.textContent = "X";
     buttonElement.addEventListener("click", () => {
-      removeSiteData(url, id);
+      removeSiteData(url, id, isPreviousDayData);
     });
 
     siteListItem.appendChild(urlElement);
@@ -36,33 +36,44 @@ const loadToWebsite = (data, id) => {
 
     siteListContainer.appendChild(siteListItem);
   });
+  if (siteListContainer.innerHTML === "") {
+    siteListContainer.innerHTML = "Nothing Yet";
+  }
 };
 
-const removeSiteData = (url, id) => {
-  chrome.storage.local.get(storageKeys.SITESINFO, (result) => {
-    let sitesInfo = result.sitesInfo;
-    if (id === "siteListProd") {
-      sitesInfo.prod.urlArr = sitesInfo.prod.urlArr.filter((item) => {
-        //true is removed
-        if (item.url === url) {
-          sitesInfo.prod.time -= item.timeSpent;
-          return false;
+const removeSiteData = (url, id, isPreviousDayData) => {
+  chrome.storage.local.get(
+    isPreviousDayData ? storageKeys.PREVIOUSSITESINFO : storageKeys.SITESINFO,
+    (result) => {
+      let sitesInfo = isPreviousDayData
+        ? result.previousSitesInfo
+        : result.sitesInfo;
+      if (id === "siteListProd") {
+        sitesInfo.prod.urlArr = sitesInfo.prod.urlArr.filter((item) => {
+          //true is removed
+          if (item.url === url) {
+            sitesInfo.prod.time -= item.timeSpent;
+            return false;
+          }
+          return true;
+        });
+      } else {
+        sitesInfo.nonProd.urlArr = sitesInfo.nonProd.urlArr.filter((item) => {
+          if (item.url === url) {
+            sitesInfo.nonProd.time -= item.timeSpent;
+            return false;
+          }
+          return true;
+        });
+      }
+      chrome.storage.local.set(
+        { [isPreviousDayData ? "previousSitesInfo" : "sitesInfo"]: sitesInfo },
+        () => {
+          loadContent();
         }
-        return true;
-      });
-    } else {
-      sitesInfo.nonProd.urlArr = sitesInfo.nonProd.urlArr.filter((item) => {
-        if (item.url === url) {
-          sitesInfo.nonProd.time -= item.timeSpent;
-          return false;
-        }
-        return true;
-      });
+      );
     }
-    chrome.storage.local.set({ sitesInfo: sitesInfo }, () => {
-      loadContent();
-    });
-  });
+  );
 };
 
 const loadContent = () => {
@@ -71,14 +82,14 @@ const loadContent = () => {
       chrome.storage.local.set({ isPreviousDayData: false });
       chrome.storage.local.get(storageKeys.PREVIOUSSITESINFO, (result) => {
         result = result.previousSitesInfo || defaultValues.sitesInfo;
-        loadToWebsite(result.prod.urlArr, "siteListProd");
-        loadToWebsite(result.nonProd.urlArr, "siteListNonProd");
+        loadToWebsite(result.prod.urlArr, "siteListProd", true);
+        loadToWebsite(result.nonProd.urlArr, "siteListNonProd", true);
       });
     } else {
       chrome.storage.local.get(storageKeys.SITESINFO, (result) => {
         result = result.sitesInfo || defaultValues.sitesInfo;
-        loadToWebsite(result.prod.urlArr, "siteListProd");
-        loadToWebsite(result.nonProd.urlArr, "siteListNonProd");
+        loadToWebsite(result.prod.urlArr, "siteListProd", false);
+        loadToWebsite(result.nonProd.urlArr, "siteListNonProd", false);
       });
     }
   });

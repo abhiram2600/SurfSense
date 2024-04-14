@@ -42,8 +42,10 @@ const loadContent = () => {
 const removeSite = (id) => {
   chrome.storage.local.get(storageKeys.SITESDATA, (result) => {
     let sitesData = result.sitesData || defaultValues.sitesData;
+    let url;
     sitesData.webPage = sitesData.webPage.filter((item) => item.id !== id);
     sitesData.domain = sitesData.domain.filter((item) => item.id !== id);
+
     chrome.storage.local.set({ sitesData: sitesData }, () => {
       loadContent();
     });
