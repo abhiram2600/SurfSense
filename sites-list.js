@@ -1,4 +1,10 @@
-import { defaultValues, parseTime, storageKeys } from "./utils.js";
+import {
+  defaultValues,
+  parseTime,
+  storageKeys,
+  modifySitesInfoData,
+  modifySitesInfoType,
+} from "./utils.js";
 
 const loadToWebsite = (data, id, isPreviousDayData) => {
   let siteListContainer = document.getElementById(id);
@@ -49,22 +55,17 @@ const removeSiteData = (url, id, isPreviousDayData) => {
         ? result.previousSitesInfo
         : result.sitesInfo;
       if (id === "siteListProd") {
-        sitesInfo.prod.urlArr = sitesInfo.prod.urlArr.filter((item) => {
-          //true is removed
-          if (item.url === url) {
-            sitesInfo.prod.time -= item.timeSpent;
-            return false;
-          }
-          return true;
-        });
+        sitesInfo.prod = modifySitesInfoData(
+          sitesInfo.prod,
+          url,
+          modifySitesInfoType.REMOVE
+        );
       } else {
-        sitesInfo.nonProd.urlArr = sitesInfo.nonProd.urlArr.filter((item) => {
-          if (item.url === url) {
-            sitesInfo.nonProd.time -= item.timeSpent;
-            return false;
-          }
-          return true;
-        });
+        sitesInfo.nonProd = modifySitesInfoData(
+          sitesInfo.nonProd,
+          url,
+          modifySitesInfoType.REMOVE
+        );
       }
       chrome.storage.local.set(
         { [isPreviousDayData ? "previousSitesInfo" : "sitesInfo"]: sitesInfo },

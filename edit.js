@@ -1,4 +1,9 @@
-import { defaultValues, storageKeys } from "./utils.js";
+import {
+  defaultValues,
+  storageKeys,
+  modifySitesInfoData,
+  modifySitesInfoType,
+} from "./utils.js";
 
 const clearSiteData = () => {
   let sitesData = { domain: [], webPage: [] };
@@ -15,7 +20,7 @@ const loadContent = () => {
       let siteListContainer = document.getElementById("siteList");
       siteListContainer.innerHTML = "";
       let combinedData = sitesData.webPage.concat(sitesData.domain);
-      combinedData.forEach(({ id, url }) => {
+      combinedData.forEach(({ url }) => {
         let siteListItem = document.createElement("div");
         siteListItem.classList.add("site-list-item");
 
@@ -27,7 +32,7 @@ const loadContent = () => {
         buttonElement.classList.add("site-list-item-button");
         buttonElement.textContent = "Remove";
         buttonElement.addEventListener("click", () => {
-          removeSite(id);
+          removeSite(url);
         });
 
         siteListItem.appendChild(urlElement);
@@ -39,15 +44,23 @@ const loadContent = () => {
   );
 };
 
-const removeSite = (id) => {
+const removeSite = (url) => {
   chrome.storage.local.get(storageKeys.SITESDATA, (result) => {
     let sitesData = result.sitesData || defaultValues.sitesData;
-    let url;
-    sitesData.webPage = sitesData.webPage.filter((item) => item.id !== id);
-    sitesData.domain = sitesData.domain.filter((item) => item.id !== id);
-
-    chrome.storage.local.set({ sitesData: sitesData }, () => {
-      loadContent();
+    sitesData.webPage = sitesData.webPage.filter((item) => item.url !== url);
+    sitesData.domain = sitesData.domain.filter((item) => item.url !== url);
+    chrome.storage.local.get(storageKeys.SITESINFO, (result) => {
+      result = result.sitesInfo;
+      result = modifySitesInfoData(
+        result,
+        url,
+        modifySitesInfoType.MODIFY,
+        modifySitesInfoType.SUBTYPE.MODIFYEDITLIST
+      );
+      chrome.storage.local.set({ sitesInfo: result });
+      chrome.storage.local.set({ sitesData: sitesData }, () => {
+        loadContent();
+      });
     });
   });
 };

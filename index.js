@@ -1,24 +1,23 @@
 import {
   defaultValues,
   linkType,
-  uniqueId,
   parseTime,
   storageKeys,
+  modifySitesInfoData,
+  modifySitesInfoType,
 } from "./utils.js";
 
-const editSitesInfo = (site) => {
+const editSitesInfo = (url) => {
   chrome.storage.local.get(storageKeys.SITESINFO, (result) => {
     let sitesInfo = result.sitesInfo || defaultValues.sitesInfo;
-    const idx = sitesInfo.nonProd.urlArr.findIndex((item) => item.url === site);
-    if (idx !== -1) {
-      const data = sitesInfo.nonProd.urlArr[idx];
-      sitesInfo.prod.urlArr.push(data);
-      sitesInfo.prod.time += data.timeSpent;
-      sitesInfo.nonProd.time -= data.timeSpent;
-      sitesInfo.nonProd.urlArr.splice(idx, 1);
-      chrome.storage.local.set({ sitesInfo });
-      loadContent();
-    }
+    sitesInfo = modifySitesInfoData(
+      sitesInfo,
+      url,
+      modifySitesInfoType.MODIFY,
+      modifySitesInfoType.SUBTYPE.MODIFYADDLIST
+    );
+    chrome.storage.local.set({ sitesInfo });
+    loadContent();
   });
 };
 
@@ -32,8 +31,7 @@ const addToStorage = (site, type) => {
         if (existingSite) {
           return;
         }
-        const uuid = uniqueId();
-        sitesData.domain.push({ id: uuid, url: site });
+        sitesData.domain.push({ url: site });
       } else {
         const existingSite = sitesData.webPage.find(
           (item) => item.url === site
@@ -41,9 +39,8 @@ const addToStorage = (site, type) => {
         if (existingSite) {
           return;
         }
-        const uuid = uniqueId();
 
-        sitesData.webPage.push({ id: uuid, url: site });
+        sitesData.webPage.push({ url: site });
       }
       chrome.storage.local.set({ sitesData }, () => {
         let element = document.getElementById(
@@ -128,7 +125,7 @@ document
 // const resetEverything = () => {
 //   chrome.storage.local.set({ sitesInfo: defaultValues.sitesInfo });
 //   chrome.storage.local.set({ currentWebsite: defaultValues.currentWebsite });
-//   chrome.storage.local.set({sitesData: defaultValues.sitesData})
+//   chrome.storage.local.set({ sitesData: defaultValues.sitesData });
 // };
 
-// document.getElementById("reset").addEventListener("click", resetEverything)
+// document.getElementById("reset").addEventListener("click", resetEverything);
