@@ -27,6 +27,10 @@ export const modifySitesInfoType = {
   },
 };
 
+export const messageType = {
+  ONSTART: "onStart",
+};
+
 export const defaultValues = {
   sitesInfo: {
     prod: { urlArr: [], time: 0 },

@@ -70,16 +70,16 @@ const removeSiteData = (url, id, isPreviousDayData) => {
       chrome.storage.local.set(
         { [isPreviousDayData ? "previousSitesInfo" : "sitesInfo"]: sitesInfo },
         () => {
-          loadContent();
+          loadContent(isPreviousDayData);
         }
       );
     }
   );
 };
 
-const loadContent = () => {
+const loadContent = (isPreviousDayData = false) => {
   chrome.storage.local.get(storageKeys.ISPREVIOUSDAYDATA, (result) => {
-    if (result.isPreviousDayData) {
+    if (result.isPreviousDayData || isPreviousDayData) {
       chrome.storage.local.set({ isPreviousDayData: false });
       chrome.storage.local.get(storageKeys.PREVIOUSSITESINFO, (result) => {
         result = result.previousSitesInfo || defaultValues.sitesInfo;

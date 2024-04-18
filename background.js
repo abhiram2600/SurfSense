@@ -1,4 +1,9 @@
-import { defaultValues, loadStatus, storageKeys } from "./utils.js";
+import {
+  defaultValues,
+  loadStatus,
+  storageKeys,
+  messageType,
+} from "./utils.js";
 
 // URL Filter /////////////
 
@@ -252,6 +257,18 @@ chrome.windows.onFocusChanged.addListener(async (windowId) => {
         startTime: Date.now(),
       });
     });
+  }
+});
+
+////////////////////////////////////////////////////
+
+// Update the data based on message ////////////////
+
+chrome.runtime.onMessage.addListener(async (message) => {
+  if (message.action === messageType.ONSTART) {
+    let currentWebsite = await getCurrentWebsiteFromStore();
+    stopTimer(currentWebsite);
+    setCurrentWebsite({ currentWebsite, startTime: Date.now() });
   }
 });
 

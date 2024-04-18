@@ -5,6 +5,7 @@ import {
   storageKeys,
   modifySitesInfoData,
   modifySitesInfoType,
+  messageType,
 } from "./utils.js";
 
 const editSitesInfo = (url) => {
@@ -86,6 +87,7 @@ const addCurrentWebpage = async () => {
 };
 
 const loadContent = () => {
+  chrome.runtime.sendMessage({ action: messageType.ONSTART });
   chrome.storage.local.get(storageKeys.SITESINFO, (result) => {
     let sitesInfo = result.sitesInfo || defaultValues.sitesInfo;
     document.getElementById("prodTime").innerText = parseTime(
