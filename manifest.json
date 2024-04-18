@@ -4,7 +4,7 @@
   "version": "1.0.0",
   "description": "extension for tracking productive work time.",
   "action": {
-    "default_popup": "index.html"
+    "default_popup": "html/index.html"
   },
   "background": {
     "service_worker": "background.js",

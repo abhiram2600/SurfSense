@@ -3,7 +3,7 @@ import {
   loadStatus,
   storageKeys,
   messageType,
-} from "./utils.js";
+} from "./js/utils.js";
 
 // URL Filter /////////////
 
@@ -262,7 +262,7 @@ chrome.windows.onFocusChanged.addListener(async (windowId) => {
 
 ////////////////////////////////////////////////////
 
-// Update the data based on message ////////////////
+// Update the data when the extension is opened ////
 
 chrome.runtime.onMessage.addListener(async (message) => {
   if (message.action === messageType.ONSTART) {
