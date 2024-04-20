@@ -24,6 +24,7 @@ currentWebsite: {
     url: string,
     status: loadStatus,
     startTime: string,
+    lastAccessedDate: string
 }
 
 previousSitesInfo: sitesInfo

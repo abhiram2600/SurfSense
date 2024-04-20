@@ -41,6 +41,7 @@ const getCurrentWebsiteFromStore = async () => {
         if (
           currentWebsite.lastAccessedDate !== new Date().toLocaleDateString()
         ) {
+          currentWebsite = defaultValues.currentWebsite;
           currentWebsite.lastAccessedDate = new Date().toLocaleDateString();
           resetData(currentWebsite);
         }
@@ -59,20 +60,21 @@ const setCurrentWebsiteToStore = async (data) => {
   });
 };
 
-const setCurrentWebsite = ({
-  currentWebsite,
-  tabId,
-  tabUrl,
-  tabStatus,
-  startTime,
-}) => {
-  currentWebsite.id = tabId ?? currentWebsite.id;
-  currentWebsite.url = tabUrl ?? currentWebsite.url;
-  currentWebsite.status = tabStatus ?? currentWebsite.status;
+const setCurrentWebsite = ({ currentWebsite, id, url, status, startTime }) => {
+  const propertiesToUpdate = { id, url, status, startTime };
+
+  for (const [key, value] of Object.entries(propertiesToUpdate)) {
+    if (value !== undefined) {
+      if (value === null) {
+        currentWebsite[key] = null;
+      } else {
+        currentWebsite[key] = value;
+      }
+    }
+  }
   if (startTime) {
     console.log("time started at ", currentWebsite.url);
   }
-  currentWebsite.startTime = startTime ?? currentWebsite.startTime;
   setCurrentWebsiteToStore(currentWebsite);
 };
 
@@ -81,7 +83,11 @@ const setCurrentWebsite = ({
 // Timer Operations /////////
 
 const stopTimer = (currentWebsite) => {
-  if (!currentWebsite.url || urlFilter(currentWebsite)) {
+  if (
+    !currentWebsite.url ||
+    urlFilter(currentWebsite) ||
+    !currentWebsite.startTime
+  ) {
     return;
   }
   let endTime = Date.now();
@@ -198,8 +204,8 @@ chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
     if (currentWebsite.status === loadStatus.INITIAL) {
       setCurrentWebsite({
         currentWebsite,
-        tabUrl: tab.url,
-        tabStatus: loadStatus.LOADED,
+        url: tab.url,
+        status: loadStatus.LOADED,
         startTime: Date.now(),
       });
     } else if (
@@ -209,8 +215,8 @@ chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
       stopTimer(currentWebsite);
       setCurrentWebsite({
         currentWebsite,
-        tabUrl: tab.url,
-        tabStatus: loadStatus.LOADED,
+        url: tab.url,
+        status: loadStatus.LOADED,
         startTime: Date.now(),
       });
     }
@@ -225,9 +231,9 @@ chrome.tabs.onActivated.addListener((activeInfo) => {
 
     setCurrentWebsite({
       currentWebsite,
-      tabId: tab.id,
-      tabUrl: tab.url ?? null,
-      tabStatus: tab.url ? loadStatus.LOADED : loadStatus.INITIAL,
+      id: tab.id,
+      url: tab.url ?? null,
+      status: tab.url ? loadStatus.LOADED : loadStatus.INITIAL,
       startTime: Date.now(),
     });
   });
@@ -238,22 +244,22 @@ chrome.tabs.onActivated.addListener((activeInfo) => {
 // Out of focus/ Window change ////
 
 chrome.windows.onFocusChanged.addListener(async (windowId) => {
-  const currentWebsite = await getCurrentWebsiteFromStore();
+  let currentWebsite = await getCurrentWebsiteFromStore();
   if (windowId === chrome.windows.WINDOW_ID_NONE) {
     stopTimer(currentWebsite);
     setCurrentWebsite({
       currentWebsite,
-      tabStatus: loadStatus.LOST_FOCUS,
+      startTime: null,
+      status: loadStatus.LOST_FOCUS,
     });
   } else {
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
       const activeTab = tabs[0];
-
       setCurrentWebsite({
         currentWebsite,
-        tabId: activeTab.id,
-        tabUrl: activeTab.url,
-        tabStatus: loadStatus.LOADED,
+        id: activeTab.id,
+        url: activeTab.url,
+        status: loadStatus.LOADED,
         startTime: Date.now(),
       });
     });
