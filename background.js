@@ -72,9 +72,9 @@ const setCurrentWebsite = ({ currentWebsite, id, url, status, startTime }) => {
       }
     }
   }
-  if (startTime) {
-    console.log("time started at ", currentWebsite.url);
-  }
+  // if (startTime) {
+  //   console.log("time started at ", currentWebsite.url);
+  // }
   setCurrentWebsiteToStore(currentWebsite);
 };
 
@@ -93,7 +93,7 @@ const stopTimer = (currentWebsite) => {
   let endTime = Date.now();
   let timeSpent = (endTime - currentWebsite.startTime) / 60000;
 
-  console.log("time stopped at ", currentWebsite.url, timeSpent);
+  // console.log("time stopped at ", currentWebsite.url, timeSpent);
   saveDataToStore(currentWebsite.url, timeSpent);
 };
 
