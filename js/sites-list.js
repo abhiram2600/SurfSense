@@ -97,13 +97,7 @@ const loadContent = (isPreviousDayData = false) => {
 };
 
 const backButton = () => {
-  try {
-    chrome.tabs.executeScript(null, {
-      code: (() => {
-        window.history.back();
-      })(),
-    });
-  } catch (err) {}
+  history.back();
 };
 
 document.addEventListener("DOMContentLoaded", () => {
